@@ -14,6 +14,7 @@ public class charecterController : MonoBehaviour
     private Vector2 m_orientation = Vector2.right;
 
     private GameObject m_equipedItem;
+    private ItemMetadata m_equipedItemMetadata;
 
     private Collider2D m_collider;
 
@@ -33,7 +34,7 @@ public class charecterController : MonoBehaviour
 
     public void UseItem() 
     {
-        if (m_equipedItem != null)
+        if (m_equipedItem != null && m_equipedItemMetadata.m_isUsable)
         {
             m_equipedItem.SendMessage("use", m_orientation);
         }
@@ -50,12 +51,19 @@ public class charecterController : MonoBehaviour
         if (m_inventory.GetItem(idx) == null || m_inventory.GetItem(idx).m_item == null)
         {
             m_equipedItem = null;
+            m_equipedItemMetadata = null;
         }
         else 
         {
             GameObject itemPrefab = m_inventory.GetItem(idx).m_item;
             Debug.Log(itemPrefab);
-            m_equipedItem = Instantiate(itemPrefab, transform);
+            //TODO ugly hack - when instentiating objects with parent the object gets modified scale. so we instantiate it outside parent. 
+            //assign parent and then call disable, enable, to call onEnable function
+            m_equipedItem = Instantiate(itemPrefab, new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z), transform.rotation);
+            m_equipedItem.transform.parent = transform;
+            m_equipedItem.SetActive(false);
+            m_equipedItem.SetActive(true);
+            m_equipedItemMetadata = m_inventory.GetItem(idx);
         }
         return true;
     }
@@ -63,10 +71,30 @@ public class charecterController : MonoBehaviour
     public void interactWithObject() 
     {
         RaycastHit2D hit = CommonItemActions.raycast(m_orientation, m_collider);
-        if (hit.collider != null)
+        if (hit.collider != null )
         {
-            hit.transform.gameObject.SendMessage("interact");
+            if (hit.transform.gameObject.GetComponent<IIteractable>() != null)
+            {
+                hit.transform.gameObject.GetComponent<IIteractable>().interact();
+            }
+            else if (hit.transform.gameObject.GetComponent<Ipickable>() != null) 
+            {
+                pickUp(hit.transform.gameObject.GetComponent<Ipickable>());
+
+            }
         }
+    }
+
+    private void pickUp(Ipickable _pickable) 
+    {
+        if (m_inventory.IsFull()) 
+        {
+            Debug.Log("charecterController::pickUp: can't pick up new item. inventory is full");
+            return;
+        }
+
+        ItemMetadata item = _pickable.pick();
+        int idx = m_inventory.Insert(item);
     }
 
     private void changeOrientation(Vector2 direction)

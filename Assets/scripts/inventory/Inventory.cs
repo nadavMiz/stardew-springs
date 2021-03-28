@@ -27,23 +27,23 @@ public class Inventory : MonoBehaviour
         return m_inventory[_idx];
     }
 
-    public bool Insert(ItemMetadata _item) 
+    public int Insert(ItemMetadata _item) 
     {
-        bool retval = InsertImp(_item);
-        if (retval) {
+        int idx = InsertImp(_item);
+        if (idx >= 0) {
             EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
         }
-        return retval;
+        return idx;
     }
 
-    public bool Insert(ItemMetadata _item, int _idx) 
+    public int Insert(ItemMetadata _item, int _idx) 
     {
-        bool retval = InsertImp(_item, _idx);
-        if (retval)
+        int idx = InsertImp(_item, _idx);
+        if (idx > 0)
         {
             EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
         }
-        return retval;
+        return idx;
     }
 
     public ItemMetadata Remove(int _idx)
@@ -91,23 +91,23 @@ public class Inventory : MonoBehaviour
         return _first.m_name.CompareTo(_second.m_name);
     }
 
-    private bool InsertImp(ItemMetadata _item, int _idx)
+    private int InsertImp(ItemMetadata _item, int _idx)
     {
         if (m_inventory[_idx] != null || _item == null)
         {
-            return false;
+            return -1;
         }
 
         m_inventory[_idx] = _item;
         ++m_numItems;
-        return true;
+        return _idx;
     }
 
-    private bool InsertImp(ItemMetadata _item)
+    private int InsertImp(ItemMetadata _item)
     {
         if (_item == null)
         {
-            return false;
+            return -1;
         }
 
         for (int i = 0; i < m_capacity; ++i)
@@ -118,12 +118,12 @@ public class Inventory : MonoBehaviour
                 ++m_numItems;
 
                 EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
-                return true;
+                return i;
             }
         }
 
         Debug.Log("Inventory::Insert: can't add item, inventory is full");
-        return false;
+        return -1;
     }
 
     private ItemMetadata RemoveImp(int _idx) 

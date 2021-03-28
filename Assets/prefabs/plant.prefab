@@ -158,6 +158,7 @@ MonoBehaviour:
   - m_startGrowthRate: 80
     m_sprite: {fileID: 3376106324329366409, guid: 88da0ffdd2c83254cb6515053c4663f8,
       type: 3}
+  m_fruit: {fileID: 11400000, guid: dec6a5933131db8468c3d240a0c6c3a5, type: 2}
 --- !u!61 &7825991960997446138
 BoxCollider2D:
   m_ObjectHideFlags: 0
