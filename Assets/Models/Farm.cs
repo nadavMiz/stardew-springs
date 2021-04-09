@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
+[System.Serializable]
 public class Farm 
 {
     int height = 6;
@@ -14,21 +17,37 @@ public class Farm
 
     public Farm(cbTileChangedFunc refreshcb)
     {
+        
         refreshTile = refreshcb;
-        farmMatrix = new Tile[width, height];
-        for (int i = 0; i< width; i++)
+        if (SaveData.current.m_savedFarmSkeleton != null)
         {
-            for(int j=0; j< height; j++)
+            farmMatrix = SaveData.current.m_savedFarmSkeleton.m_farmMatrix;
+            Debug.LogError("set the farm from the save.");
+            return;
+        }
+        farmMatrix = new Tile[width, height];
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
             {
                 farmMatrix[i, j] = new Tile("Empty", i, j);
             }
         }
     }
+
+
+
     public Farm(int x, int y, cbTileChangedFunc refreshcb)
     {
         width = x;
         height = y;
         refreshTile = refreshcb;
+        if (SaveData.current.m_savedFarmSkeleton != null)
+        {
+            farmMatrix = SaveData.current.m_savedFarmSkeleton.m_farmMatrix;
+            Debug.Log("set the farm from the save.");
+            return;
+        }
         farmMatrix = new Tile[x, y];
         for (int i = 0; i < x; i++)
         {
@@ -38,6 +57,13 @@ public class Farm
             }
         }
     }
+
+
+
+
+
+
+
 
     /// <summary>
     /// this changes a tile type, and calls a controller cb to destroy old object and create new one.
@@ -87,5 +113,19 @@ public class Farm
     public Vector2Int getSize()
     {
         return new Vector2Int(width, height);
+    }
+    public void saveGame()
+    {
+
+    }
+}
+
+[System.Serializable]
+public class FarmSkeleton
+{
+    public Tile[,] m_farmMatrix;
+    public FarmSkeleton(Tile[,] farmMatrix)
+    {
+        m_farmMatrix = farmMatrix;
     }
 }
