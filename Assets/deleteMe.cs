@@ -23,12 +23,7 @@ public class deleteMe : MonoBehaviour
 
         //m_gamePersistentData.SaveGame(m_counter);
     }
-    public void down()
-    {
-        m_counter.current--;
-        text.text = m_counter.current.ToString();
-        //m_gamePersistentData.SaveGame(m_counter);
-    }
+
 }
 
 [System.Serializable]
