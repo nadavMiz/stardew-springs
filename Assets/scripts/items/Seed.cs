@@ -2,30 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Seed : MonoBehaviour
+public class Seed: MonoBehaviour, Iuseable
 {
 
     public string m_plantName;
 
-    private Collider2D m_collider;
-
-    private void OnEnable()
+    public Iuseable.status Use(GameObject _actor, Vector2 _direction)
     {
-        m_collider = GetComponentInParent<Collider2D>();
-    }
+        Collider2D collider = _actor.GetComponent<Collider2D>();
 
-    public void use(Vector2 _direction) 
-    {
-        RaycastHit2D hit = CommonItemActions.raycast(_direction, m_collider);
+        Debug.Log("asdsad");
+        RaycastHit2D hit = CommonItemActions.raycast(_direction, collider);
         if (!hit)
         {
-            return;
+            return Iuseable.status.e_none;
         }
 
         TileGO tile = hit.transform.gameObject.GetComponent<TileGO>();
-        if (tile) 
+        if (tile)
         {
             tile.changeto(m_plantName);
+            return Iuseable.status.e_delete;
         }
+
+        return Iuseable.status.e_none;
     }
 }
