@@ -17,3 +17,4 @@ MonoBehaviour:
   m_name: watering can
   m_isUsable: 1
   m_isHoldable: 0
+  m_inventoryCapacity: 1
