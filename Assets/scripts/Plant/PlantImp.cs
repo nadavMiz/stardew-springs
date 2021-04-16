@@ -33,8 +33,10 @@ public class PlantImp : MonoBehaviour
 
             m_growthRate = _growthRate;
             m_stages = _stages;
+            m_daysToWilt = _daysToWilt;
+            m_wiltedSprite = _wiltedSprite;
 
-            if (m_stages.Count > 0)
+        if (m_stages.Count > 0)
             {
                 m_currentStage = 0;
                 m_spriteRenderer.sprite = m_stages[0].m_sprite;

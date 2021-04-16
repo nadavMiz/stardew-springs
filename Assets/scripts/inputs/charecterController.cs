@@ -13,8 +13,8 @@ public class charecterController : MonoBehaviour
 
     private Vector2 m_orientation = Vector2.right;
 
-    private GameObject m_equipedItem;
-    private ItemMetadata m_equipedItemMetadata;
+    private int m_equipedItem;
+    private GameObject m_heldItem;
 
     private Collider2D m_collider;
 
@@ -34,9 +34,10 @@ public class charecterController : MonoBehaviour
 
     public void UseItem() 
     {
-        if (m_equipedItem != null && m_equipedItemMetadata.m_isUsable)
+        Debug.Log(m_inventory.GetItem(m_equipedItem) + "UseItem");
+        if (m_inventory.GetItem(m_equipedItem) != null && m_inventory.GetItem(m_equipedItem).m_useFunc != null)
         {
-            m_equipedItem.SendMessage("use", m_orientation);
+            m_inventory.GetItem(m_equipedItem).m_useFunc.Use(gameObject, m_orientation);
         }
     }
 
@@ -47,23 +48,18 @@ public class charecterController : MonoBehaviour
             return false;
         }
 
-        Destroy(m_equipedItem);
-        if (m_inventory.GetItem(idx) == null || m_inventory.GetItem(idx).m_item == null)
+        Destroy(m_heldItem);
+
+        m_equipedItem = idx;
+        ItemMetadata item = m_inventory.SetSelectedItem(idx);
+        if (item != null && item.m_item != null)
         {
-            m_equipedItem = null;
-            m_equipedItemMetadata = null;
-        }
-        else 
-        {
-            GameObject itemPrefab = m_inventory.GetItem(idx).m_item;
+            GameObject itemPrefab = item.m_item;
             Debug.Log(itemPrefab);
             //TODO ugly hack - when instentiating objects with parent the object gets modified scale. so we instantiate it outside parent. 
-            //assign parent and then call disable, enable, to call onEnable function
-            m_equipedItem = Instantiate(itemPrefab, new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z), transform.rotation);
-            m_equipedItem.transform.parent = transform;
-            m_equipedItem.SetActive(false);
-            m_equipedItem.SetActive(true);
-            m_equipedItemMetadata = m_inventory.GetItem(idx);
+            //assign parent
+            m_heldItem = Instantiate(itemPrefab, new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z), transform.rotation);
+            m_heldItem.transform.parent = transform;
         }
         return true;
     }
