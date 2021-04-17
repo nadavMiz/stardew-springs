@@ -10,7 +10,6 @@ public class Seed: MonoBehaviour, Iuseable
     public Iuseable.status Use(GameObject _actor, Vector2 _direction)
     {
         Collider2D collider = _actor.GetComponent<Collider2D>();
-
         RaycastHit2D hit = CommonItemActions.raycast(_direction, collider);
         if (!hit)
         {

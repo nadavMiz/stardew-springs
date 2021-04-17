@@ -77,6 +77,7 @@ public class Inventory : MonoBehaviour
 
         --m_inventory[_idx].m_numItems;
         EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
+
         return m_inventory[_idx].m_item;
     }
 
@@ -160,10 +161,6 @@ public class Inventory : MonoBehaviour
     {
         for (int i = 0; i < m_capacity; ++i) 
         {
-            if (m_inventory[i].m_item != null) 
-            {
-                Debug.Log(_itemName + " " + m_inventory[i].m_numItems + " " + m_inventory[i].m_item.m_inventoryCapacity);
-            }
             if (m_inventory[i].m_item != null &&  _itemName == m_inventory[i].m_item.m_name && m_inventory[i].m_numItems < m_inventory[i].m_item.m_inventoryCapacity) 
             {
                 return i;
