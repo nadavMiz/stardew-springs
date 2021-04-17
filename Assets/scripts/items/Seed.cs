@@ -11,7 +11,6 @@ public class Seed: MonoBehaviour, Iuseable
     {
         Collider2D collider = _actor.GetComponent<Collider2D>();
 
-        Debug.Log("asdsad");
         RaycastHit2D hit = CommonItemActions.raycast(_direction, collider);
         if (!hit)
         {
@@ -22,7 +21,7 @@ public class Seed: MonoBehaviour, Iuseable
         if (tile)
         {
             tile.changeto(m_plantName);
-            return Iuseable.status.e_delete;
+            return Iuseable.status.e_consume;
         }
 
         return Iuseable.status.e_none;
