@@ -32,12 +32,27 @@ public class charecterController : MonoBehaviour
         m_rigidbody2D.velocity = Vector3.SmoothDamp(m_rigidbody2D.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
     }
 
+    private void handleItemStatus(Iuseable.status status)
+    {
+        if (status == Iuseable.status.e_consume) 
+        {
+            Debug.Log(m_equipedItem);
+            m_inventory.RemoveOne(m_equipedItem);
+        }
+    }
+
     public void UseItem() 
     {
         Debug.Log(m_inventory.GetItem(m_equipedItem) + "UseItem");
-        if (m_inventory.GetItem(m_equipedItem) != null && m_inventory.GetItem(m_equipedItem).m_useFunc != null)
+        if (m_inventory.GetItem(m_equipedItem) != null && m_inventory.GetItem(m_equipedItem).m_isUsable)
         {
-            m_inventory.GetItem(m_equipedItem).m_useFunc.Use(gameObject, m_orientation);
+            Iuseable useable = m_inventory.GetItem(m_equipedItem).m_item.GetComponent<Iuseable>();
+            if (useable != null) 
+            {
+                //TODO should probably be handled in a seperate class
+                Iuseable.status status = useable.Use(gameObject, m_orientation);
+                handleItemStatus(status);
+            }
         }
     }
 
@@ -52,12 +67,10 @@ public class charecterController : MonoBehaviour
 
         m_equipedItem = idx;
         ItemMetadata item = m_inventory.SetSelectedItem(idx);
-        if (item != null && item.m_item != null)
+        if (item != null && item.m_item != null && item.m_isHoldable)
         {
             GameObject itemPrefab = item.m_item;
-            Debug.Log(itemPrefab);
-            //TODO ugly hack - when instentiating objects with parent the object gets modified scale. so we instantiate it outside parent. 
-            //assign parent
+            Debug.Log("picked up: " + itemPrefab);
             m_heldItem = Instantiate(itemPrefab, new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z), transform.rotation);
             m_heldItem.transform.parent = transform;
         }
@@ -123,5 +136,4 @@ public class charecterController : MonoBehaviour
             m_orientation = orientation;
         }
     }
-
 }
