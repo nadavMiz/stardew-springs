@@ -18,7 +18,6 @@ public class FarmController : MonoBehaviour
         GameObjectContainer = new GameObject();
         Vector2Int sizeVector = farm.getSize();
         ControllerfarmMatrix = new GameObject[sizeVector.x, sizeVector.y];
-        Debug.Log("new farm");
         initFarmGameObjects();
         loadGrowthValueIfAny();
     }

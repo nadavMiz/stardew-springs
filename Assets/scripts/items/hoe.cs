@@ -2,15 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Seed: MonoBehaviour, Iuseable
+public class hoe : MonoBehaviour, Iuseable
 {
-
-    public string m_plantName;
+    private string tilledTile = "hole";
 
     public Iuseable.status Use(GameObject _actor, Vector2 _direction)
     {
         Collider2D collider = _actor.GetComponent<Collider2D>();
-
         RaycastHit2D hit = CommonItemActions.raycast(_direction, collider);
         if (!hit)
         {
@@ -18,12 +16,12 @@ public class Seed: MonoBehaviour, Iuseable
         }
 
         TileGO tile = hit.transform.gameObject.GetComponent<TileGO>();
-        if (tile && tile.isTilled())
+        if (tile && !tile.isTilled())
         {
-            tile.changeto(m_plantName);
-            return Iuseable.status.e_consume;
+            tile.changeto(tilledTile);
         }
 
         return Iuseable.status.e_none;
     }
+
 }

@@ -6,6 +6,7 @@ public class charecterController : MonoBehaviour
 {
     public float m_speed = 4.0f;
     public Inventory m_inventory;
+    public CharecterAnimation m_animator;
 
     private Rigidbody2D m_rigidbody2D;
     private Vector3 m_Velocity = Vector3.zero;
@@ -27,6 +28,7 @@ public class charecterController : MonoBehaviour
 
     public void Move(Vector2 _direction)
     {
+        m_animator.move(_direction);
         changeOrientation(_direction);
         Vector3 targetVelocity = new Vector2(_direction.x * m_speed, _direction.y * m_speed);
         m_rigidbody2D.velocity = Vector3.SmoothDamp(m_rigidbody2D.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
@@ -36,14 +38,12 @@ public class charecterController : MonoBehaviour
     {
         if (status == Iuseable.status.e_consume) 
         {
-            Debug.Log(m_equipedItem);
             m_inventory.RemoveOne(m_equipedItem);
         }
     }
 
     public void UseItem() 
     {
-        Debug.Log(m_inventory.GetItem(m_equipedItem) + "UseItem");
         if (m_inventory.GetItem(m_equipedItem) != null && m_inventory.GetItem(m_equipedItem).m_isUsable)
         {
             Iuseable useable = m_inventory.GetItem(m_equipedItem).m_item.GetComponent<Iuseable>();
@@ -51,6 +51,7 @@ public class charecterController : MonoBehaviour
             {
                 //TODO should probably be handled in a seperate class
                 Iuseable.status status = useable.Use(gameObject, m_orientation);
+                m_animator.useItem(m_inventory.GetItem(m_equipedItem).m_itemId);
                 handleItemStatus(status);
             }
         }
@@ -58,7 +59,7 @@ public class charecterController : MonoBehaviour
 
     public bool changeItem(int idx) 
     {
-        if (idx >= m_inventory.m_capacity || idx < 0) 
+        if (idx >= m_inventory.m_capacity || idx < 0 || m_equipedItem == idx) 
         {
             return false;
         }
