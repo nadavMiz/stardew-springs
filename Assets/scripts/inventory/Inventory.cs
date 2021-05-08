@@ -55,6 +55,7 @@ public class Inventory : MonoBehaviour
             m_selectedItem = _idx;
             EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
         }
+        Debug.Log(_idx + " " + m_inventory + " " + m_inventory[_idx] + " " + m_inventory[_idx].m_item);
         return m_inventory[_idx].m_item;
     }
 

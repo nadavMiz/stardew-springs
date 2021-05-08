@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e29da076fe7b1cc488b4322497ddc1be, type: 3}
   m_Name: hoe
   m_EditorClassIdentifier: 
-  m_item: {fileID: 0}
-  m_icon: {fileID: 0}
-  m_name: 
+  m_item: {fileID: 4963694840353466606, guid: 5f4d4bda891672543ac07a6dbfb6be6b, type: 3}
+  m_itemId: 3
+  m_icon: {fileID: -3251113029797307112, guid: 4aeca0defd0aca14d8303c3441d994ed, type: 3}
+  m_name: hoe
   m_isUsable: 1
   m_isHoldable: 0
   m_inventoryCapacity: 1
