@@ -7,7 +7,7 @@ using UnityEngine;
 public class SerializationManager 
 {
 
-    public static bool Save(string saveName, SaveData saveData)
+    public static bool serializeEntireGameToFile(string saveName, SaveData saveData)
     {
         BinaryFormatter formatter = GetBinaryFormatter();
         if (!Directory.Exists(Application.persistentDataPath + "/saves"))
@@ -22,9 +22,10 @@ public class SerializationManager
         return true;
     }
 
-    public static SaveData Load(string saveName)
+    public static SaveData getSaveDataFromSaveFile(string saveName)
     {
         string path = Application.persistentDataPath + "/saves/" + saveName + ".save";
+        Debug.Log("getting Application.persistentDataPath " + Application.persistentDataPath);
         if (!File.Exists(path))
         {
             return null;

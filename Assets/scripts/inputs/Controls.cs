@@ -49,6 +49,14 @@ public class @Controls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""ActivateMenu"",
+                    ""type"": ""Button"",
+                    ""id"": ""0f301c91-63c6-45f7-b7ca-6d762ef84b3b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -216,6 +224,17 @@ public class @Controls : IInputActionCollection, IDisposable
                     ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""e899b817-8f4f-42d8-8eca-776796947174"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ActivateMenu"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -228,6 +247,7 @@ public class @Controls : IInputActionCollection, IDisposable
         m_charecter_Use = m_charecter.FindAction("Use", throwIfNotFound: true);
         m_charecter_ChangeItem = m_charecter.FindAction("ChangeItem", throwIfNotFound: true);
         m_charecter_Interact = m_charecter.FindAction("Interact", throwIfNotFound: true);
+        m_charecter_ActivateMenu = m_charecter.FindAction("ActivateMenu", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -281,6 +301,7 @@ public class @Controls : IInputActionCollection, IDisposable
     private readonly InputAction m_charecter_Use;
     private readonly InputAction m_charecter_ChangeItem;
     private readonly InputAction m_charecter_Interact;
+    private readonly InputAction m_charecter_ActivateMenu;
     public struct CharecterActions
     {
         private @Controls m_Wrapper;
@@ -289,6 +310,7 @@ public class @Controls : IInputActionCollection, IDisposable
         public InputAction @Use => m_Wrapper.m_charecter_Use;
         public InputAction @ChangeItem => m_Wrapper.m_charecter_ChangeItem;
         public InputAction @Interact => m_Wrapper.m_charecter_Interact;
+        public InputAction @ActivateMenu => m_Wrapper.m_charecter_ActivateMenu;
         public InputActionMap Get() { return m_Wrapper.m_charecter; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -310,6 +332,9 @@ public class @Controls : IInputActionCollection, IDisposable
                 @Interact.started -= m_Wrapper.m_CharecterActionsCallbackInterface.OnInteract;
                 @Interact.performed -= m_Wrapper.m_CharecterActionsCallbackInterface.OnInteract;
                 @Interact.canceled -= m_Wrapper.m_CharecterActionsCallbackInterface.OnInteract;
+                @ActivateMenu.started -= m_Wrapper.m_CharecterActionsCallbackInterface.OnActivateMenu;
+                @ActivateMenu.performed -= m_Wrapper.m_CharecterActionsCallbackInterface.OnActivateMenu;
+                @ActivateMenu.canceled -= m_Wrapper.m_CharecterActionsCallbackInterface.OnActivateMenu;
             }
             m_Wrapper.m_CharecterActionsCallbackInterface = instance;
             if (instance != null)
@@ -326,6 +351,9 @@ public class @Controls : IInputActionCollection, IDisposable
                 @Interact.started += instance.OnInteract;
                 @Interact.performed += instance.OnInteract;
                 @Interact.canceled += instance.OnInteract;
+                @ActivateMenu.started += instance.OnActivateMenu;
+                @ActivateMenu.performed += instance.OnActivateMenu;
+                @ActivateMenu.canceled += instance.OnActivateMenu;
             }
         }
     }
@@ -336,5 +364,6 @@ public class @Controls : IInputActionCollection, IDisposable
         void OnUse(InputAction.CallbackContext context);
         void OnChangeItem(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
+        void OnActivateMenu(InputAction.CallbackContext context);
     }
 }

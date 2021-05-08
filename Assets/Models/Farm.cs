@@ -25,6 +25,10 @@ public class Farm
             Debug.LogError("set the farm from the save.");
             return;
         }
+        else
+        {
+            Debug.Log("SaveData.current.m_savedFarmSkeleton is null");
+        }
         farmMatrix = new Tile[width, height];
         for (int i = 0; i < width; i++)
         {

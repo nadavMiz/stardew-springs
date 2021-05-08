@@ -15,6 +15,8 @@ public class charecterInputManager : MonoBehaviour
         m_controls = new Controls();
         m_controls.charecter.Move.performed += HandleMove;
         m_controls.charecter.Move.canceled += HandleMove;
+        m_controls.charecter.ActivateMenu.performed += ActivateInGameMenu;
+        m_controls.charecter.ActivateMenu.Enable();
         m_controls.charecter.Move.Enable();
         m_controls.charecter.Use.performed += UseObject;
         m_controls.charecter.Use.Enable();
@@ -31,8 +33,10 @@ public class charecterInputManager : MonoBehaviour
 
     private void OnDisable()
     {
+        m_controls.charecter.ActivateMenu.performed -= ActivateInGameMenu;
         m_controls.charecter.Move.performed -= HandleMove;
         m_controls.charecter.Move.canceled -= HandleMove;
+        m_controls.charecter.ActivateMenu.Disable();
         m_controls.charecter.Move.Disable();
         m_controls.charecter.Use.performed -= UseObject;
         m_controls.charecter.Use.Disable();
@@ -42,6 +46,17 @@ public class charecterInputManager : MonoBehaviour
         m_controls.charecter.Interact.Disable();
     }
 
+    private void ActivateInGameMenu(InputAction.CallbackContext context)
+    {
+        Debug.LogError("escape pressed");
+        MenuManager menuManager = FindObjectOfType<MenuManager>();
+        if(menuManager == null)
+        {
+            Debug.LogError("MenuManager couldnt be found");
+            return;
+        }
+        menuManager.activateInGameMenu();
+    }
     private void HandleMove(InputAction.CallbackContext context) 
     {
         m_moveDirection = context.ReadValue<Vector2>();
