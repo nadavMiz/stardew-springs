@@ -27,7 +27,9 @@ public class PlantImp : MonoBehaviour
     private delegate void m_endOfDayImp();
         public void Init(float _growthRate, List<StageData> _stages, int _daysToWilt = -1, Sprite _wiltedSprite = null)
         {
-            if(m_spriteRenderer == null) {
+            m_daysToWilt = _daysToWilt;
+            m_wiltedSprite = _wiltedSprite;
+            if (m_spriteRenderer == null) {
                 m_spriteRenderer = GetComponent<SpriteRenderer>();
             }
 
@@ -55,6 +57,7 @@ public class PlantImp : MonoBehaviour
      */
     public void SetupGrowth(float _currentGrowth)
     {
+        
         if(_currentGrowth <= 0 || _currentGrowth>100)
         {
             return;
@@ -63,6 +66,7 @@ public class PlantImp : MonoBehaviour
         m_currentStage = 0;
         m_currentGrowth = _currentGrowth;
         EndDay();
+        
     }
 
     public void WaterImp()
@@ -77,17 +81,22 @@ public class PlantImp : MonoBehaviour
     }
     private void wilt() 
     {
+        Debug.LogError("im wltingggg decayyyy");
         m_spriteRenderer.sprite = m_wiltedSprite;
     }
     public void EndDay()
     {
+        Debug.LogError("EndDay Called");
         m_currentGrowth += m_dailyGrowth;
 
         //move the plant to the next stage if it passed its initial growth rate
         while ( (m_currentStage < m_stages.Count - 1) && (m_currentGrowth >= m_stages[m_currentStage + 1].m_startGrowthRate))
         {
+            Debug.LogError("m_currentStage " + m_currentStage + "m_currentGrowth " + m_currentGrowth + "m_startGrowthRate " + m_stages[m_currentStage + 1].m_startGrowthRate);
+
             ++m_currentStage;
             m_spriteRenderer.sprite = m_stages[m_currentStage].m_sprite;
+            Debug.LogError("changed sprite to "+m_stages[m_currentStage].m_sprite.name);
         }
         if (!m_isWatered)
         {
@@ -95,6 +104,7 @@ public class PlantImp : MonoBehaviour
         }
         else
         {
+            Debug.LogError("m_daysToWilt = " + m_daysToWilt + " m_daysNotWatered = " + m_daysNotWatered);
             if (m_daysToWilt >= 0 && ++m_daysNotWatered >= m_daysToWilt)
             {
                 wilt();

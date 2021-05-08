@@ -27,7 +27,7 @@ public class FruitPlant : MonoBehaviour, Ipickable
         if (m_plantImp.m_currentStage != m_plantImp.m_stages.Count - 1) {
             return null;
         }
-
+        Debug.LogError("not pressed pick but picking any ways");
         int previousStage = m_plantImp.m_currentStage - 1;
         m_plantImp.m_currentGrowth = m_plantImp.m_stages[previousStage].m_startGrowthRate;
         m_spriteRenderer.sprite = m_plantImp.m_stages[previousStage].m_sprite;
