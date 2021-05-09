@@ -4,15 +4,22 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
+    public class ItemStack
+    {
+        public ItemMetadata m_item = null;
+        public int m_numItems = 0;
+    }
+
     public List<ItemMetadata> m_initialItems;
     public int m_capacity { get; private set; } = 10;
-    private List<ItemMetadata> m_inventory;
+    private List<ItemStack> m_inventory;
     private int m_numItems = 0;
+    public int m_selectedItem = 0;
 
     private void Start()
     {
-        m_inventory = new List<ItemMetadata>(m_capacity);
-        for (int i = 0; i < m_capacity; ++i) m_inventory.Add(null);
+        m_inventory = new List<ItemStack>(m_capacity);
+        for (int i = 0; i < m_capacity; ++i) m_inventory.Add(new ItemStack());
 
         foreach (ItemMetadata item in m_initialItems) 
         {
@@ -24,7 +31,12 @@ public class Inventory : MonoBehaviour
 
     public ItemMetadata GetItem(int _idx)
     {
-        return m_inventory[_idx];
+        return m_inventory[_idx].m_item;
+    }
+
+    public int GetItemQuantity(int _idx)
+    {
+        return m_inventory[_idx].m_numItems;
     }
 
     public int Insert(ItemMetadata _item) 
@@ -36,24 +48,52 @@ public class Inventory : MonoBehaviour
         return idx;
     }
 
-    public int Insert(ItemMetadata _item, int _idx) 
+    public ItemMetadata SetSelectedItem(int _idx) 
     {
-        int idx = InsertImp(_item, _idx);
-        if (idx > 0)
+        if (_idx != m_selectedItem) 
         {
+            m_selectedItem = _idx;
             EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
         }
-        return idx;
+        Debug.Log(_idx + " " + m_inventory + " " + m_inventory[_idx] + " " + m_inventory[_idx].m_item);
+        return m_inventory[_idx].m_item;
     }
 
-    public ItemMetadata Remove(int _idx)
+    public int GetSelectedItemIdx() 
     {
-        ItemMetadata retval = RemoveImp(_idx);
-        if (retval)
+        return m_selectedItem;
+    }
+
+    public ItemMetadata RemoveOne(int _idx) 
+    {
+        if (m_inventory[_idx].m_item == null)
         {
-            EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
+            return null;
         }
-        return retval;
+
+        if (m_inventory[_idx].m_numItems == 1) 
+        {
+            return RemoveAll(_idx);
+        }
+
+        --m_inventory[_idx].m_numItems;
+        EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
+        return m_inventory[_idx].m_item;
+    }
+
+    public ItemMetadata RemoveAll(int _idx)
+    {
+        if (m_inventory[_idx].m_item == null)
+        {
+            return null;
+        }
+
+        ItemMetadata item = m_inventory[_idx].m_item;
+        m_inventory[_idx].m_item = null;
+        m_inventory[_idx].m_numItems = 0;
+        --m_numItems;
+        EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
+        return item;
     }
 
     public bool IsFull()
@@ -74,33 +114,22 @@ public class Inventory : MonoBehaviour
 
     public void Sort()
     {
+        //TODO add combine?
         m_inventory.Sort(ItemComparison);
         EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
     }
 
-    static private int ItemComparison(ItemMetadata _first, ItemMetadata _second)
+    static private int ItemComparison(ItemStack _first, ItemStack _second)
     {
-        if(_first.m_isUsable != _second.m_isUsable) {
-            return _first.m_isUsable.CompareTo(_second.m_isUsable);
+        if(_first.m_item.m_isUsable != _second.m_item.m_isUsable) {
+            return _first.m_item.m_isUsable.CompareTo(_second.m_item.m_isUsable);
         }
 
-        if (!_first.m_isUsable && (_first.m_isHoldable != _second.m_isHoldable)) {
-            return _first.m_isHoldable.CompareTo(_second.m_isHoldable);
+        if (!_first.m_item.m_isUsable && (_first.m_item.m_isHoldable != _second.m_item.m_isHoldable)) {
+            return _first.m_item.m_isHoldable.CompareTo(_second.m_item.m_isHoldable);
         }
 
-        return _first.m_name.CompareTo(_second.m_name);
-    }
-
-    private int InsertImp(ItemMetadata _item, int _idx)
-    {
-        if (m_inventory[_idx] != null || _item == null)
-        {
-            return -1;
-        }
-
-        m_inventory[_idx] = _item;
-        ++m_numItems;
-        return _idx;
+        return _first.m_item.m_name.CompareTo(_second.m_item.m_name);
     }
 
     private int InsertImp(ItemMetadata _item)
@@ -110,38 +139,52 @@ public class Inventory : MonoBehaviour
             return -1;
         }
 
-        for (int i = 0; i < m_capacity; ++i)
+        int idx = FindFreeStack(_item.m_name);
+        if (idx >= 0) 
         {
-            if (m_inventory[i] == null)
-            {
-                m_inventory[i] = _item;
-                ++m_numItems;
-
-                EventManager.TriggerEvent(InventoryEvent.INVENTORY_CHANGED);
-                return i;
-            }
+            ++m_inventory[idx].m_numItems;
+            return idx;
+        }
+        idx = FindEmptySlot();
+        if (idx >= 0) 
+        {
+            m_inventory[idx].m_item = _item;
+            m_inventory[idx].m_numItems = 1;
+            return idx;
         }
 
         Debug.Log("Inventory::Insert: can't add item, inventory is full");
         return -1;
     }
 
-    private ItemMetadata RemoveImp(int _idx) 
+    private int FindFreeStack(string _itemName) 
     {
-        if (m_inventory[_idx] == null)
+        for (int i = 0; i < m_capacity; ++i) 
         {
-            return null;
+            if (m_inventory[i].m_item != null &&  _itemName == m_inventory[i].m_item.m_name && m_inventory[i].m_numItems < m_inventory[i].m_item.m_inventoryCapacity) 
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private int FindEmptySlot()
+    {
+        for (int i = 0; i < m_capacity; ++i)
+        {
+            if (m_inventory[i].m_item == null)
+            {
+                return i;
+            }
         }
 
-        ItemMetadata retval = m_inventory[_idx];
-        m_inventory[_idx] = null;
-        --m_numItems;
-        return retval;
+        return -1;
     }
 
     public void MoveImp(int _from, int _to)
     {
-        ItemMetadata tmp = m_inventory[_to];
+        ItemStack tmp = m_inventory[_to];
         m_inventory[_to] = m_inventory[_from];
         m_inventory[_from] = tmp;
     }

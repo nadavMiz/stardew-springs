@@ -13,6 +13,7 @@ public class FruitPlant : MonoBehaviour, Ipickable
     private void Awake()
     {
         m_plantImp = GetComponent<PlantImp>();
+        m_spriteRenderer = GetComponent<SpriteRenderer>();
         m_plantImp.Init(m_growthRate, m_stages);
     }
     private void Start()
@@ -29,6 +30,7 @@ public class FruitPlant : MonoBehaviour, Ipickable
         }
         Debug.LogError("not pressed pick but picking any ways");
         int previousStage = m_plantImp.m_currentStage - 1;
+        Debug.Log(m_plantImp.m_stages[previousStage].m_sprite);
         m_plantImp.m_currentGrowth = m_plantImp.m_stages[previousStage].m_startGrowthRate;
         m_spriteRenderer.sprite = m_plantImp.m_stages[previousStage].m_sprite;
         m_plantImp.m_currentStage = previousStage;

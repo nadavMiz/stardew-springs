@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: waterCan
   m_EditorClassIdentifier: 
   m_item: {fileID: 7836055227901912110, guid: efabc39fffd2170428bbf1e115812e75, type: 3}
+  m_itemId: 1
   m_icon: {fileID: 21300000, guid: 63623d60b47fb8a439ac09dc6f185bd3, type: 3}
   m_name: watering can
   m_isUsable: 1
   m_isHoldable: 0
+  m_inventoryCapacity: 1

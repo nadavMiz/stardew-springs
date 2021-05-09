@@ -6,6 +6,7 @@ public class charecterController : MonoBehaviour
 {
     public float m_speed = 4.0f;
     public Inventory m_inventory;
+    public CharecterAnimation m_animator;
 
     private Rigidbody2D m_rigidbody2D;
     private Vector3 m_Velocity = Vector3.zero;
@@ -13,8 +14,8 @@ public class charecterController : MonoBehaviour
 
     private Vector2 m_orientation = Vector2.right;
 
-    private GameObject m_equipedItem;
-    private ItemMetadata m_equipedItemMetadata;
+    private int m_equipedItem;
+    private GameObject m_heldItem;
 
     private Collider2D m_collider;
 
@@ -27,43 +28,52 @@ public class charecterController : MonoBehaviour
 
     public void Move(Vector2 _direction)
     {
+        m_animator.move(_direction);
         changeOrientation(_direction);
         Vector3 targetVelocity = new Vector2(_direction.x * m_speed, _direction.y * m_speed);
         m_rigidbody2D.velocity = Vector3.SmoothDamp(m_rigidbody2D.velocity, targetVelocity, ref m_Velocity, m_MovementSmoothing);
     }
 
+    private void handleItemStatus(Iuseable.status status)
+    {
+        if (status == Iuseable.status.e_consume) 
+        {
+            m_inventory.RemoveOne(m_equipedItem);
+        }
+    }
+
     public void UseItem() 
     {
-        if (m_equipedItem != null && m_equipedItemMetadata.m_isUsable)
+        if (m_inventory.GetItem(m_equipedItem) != null && m_inventory.GetItem(m_equipedItem).m_isUsable)
         {
-            m_equipedItem.SendMessage("use", m_orientation);
+            Iuseable useable = m_inventory.GetItem(m_equipedItem).m_item.GetComponent<Iuseable>();
+            if (useable != null) 
+            {
+                //TODO should probably be handled in a seperate class
+                Iuseable.status status = useable.Use(gameObject, m_orientation);
+                m_animator.useItem(m_inventory.GetItem(m_equipedItem).m_itemId);
+                handleItemStatus(status);
+            }
         }
     }
 
     public bool changeItem(int idx) 
     {
-        if (idx >= m_inventory.m_capacity || idx < 0) 
+        if (idx >= m_inventory.m_capacity || idx < 0 || m_equipedItem == idx) 
         {
             return false;
         }
 
-        Destroy(m_equipedItem);
-        if (m_inventory.GetItem(idx) == null || m_inventory.GetItem(idx).m_item == null)
+        Destroy(m_heldItem);
+
+        m_equipedItem = idx;
+        ItemMetadata item = m_inventory.SetSelectedItem(idx);
+        if (item != null && item.m_item != null && item.m_isHoldable)
         {
-            m_equipedItem = null;
-            m_equipedItemMetadata = null;
-        }
-        else 
-        {
-            GameObject itemPrefab = m_inventory.GetItem(idx).m_item;
-            Debug.Log(itemPrefab);
-            //TODO ugly hack - when instentiating objects with parent the object gets modified scale. so we instantiate it outside parent. 
-            //assign parent and then call disable, enable, to call onEnable function
-            m_equipedItem = Instantiate(itemPrefab, new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z), transform.rotation);
-            m_equipedItem.transform.parent = transform;
-            m_equipedItem.SetActive(false);
-            m_equipedItem.SetActive(true);
-            m_equipedItemMetadata = m_inventory.GetItem(idx);
+            GameObject itemPrefab = item.m_item;
+            Debug.Log("picked up: " + itemPrefab);
+            m_heldItem = Instantiate(itemPrefab, new Vector3(transform.position.x, transform.position.y + 0.3f, transform.position.z), transform.rotation);
+            m_heldItem.transform.parent = transform;
         }
         return true;
     }
@@ -127,5 +137,4 @@ public class charecterController : MonoBehaviour
             m_orientation = orientation;
         }
     }
-
 }

@@ -17,3 +17,4 @@ MonoBehaviour:
   m_name: tomato
   m_isUsable: 0
   m_isHoldable: 1
+  m_inventoryCapacity: 10

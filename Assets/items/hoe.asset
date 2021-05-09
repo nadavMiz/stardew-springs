@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e29da076fe7b1cc488b4322497ddc1be, type: 3}
-  m_Name: tomatoSeeds
+  m_Name: hoe
   m_EditorClassIdentifier: 
-  m_item: {fileID: 4858992594587866075, guid: 0485915f19878544199e9ada5c2921c9, type: 3}
-  m_itemId: 2
-  m_icon: {fileID: -6403212856916885531, guid: 88da0ffdd2c83254cb6515053c4663f8, type: 3}
-  m_name: Seeds (Tomato)
+  m_item: {fileID: 4963694840353466606, guid: 5f4d4bda891672543ac07a6dbfb6be6b, type: 3}
+  m_itemId: 3
+  m_icon: {fileID: -3251113029797307112, guid: 4aeca0defd0aca14d8303c3441d994ed, type: 3}
+  m_name: hoe
   m_isUsable: 1
   m_isHoldable: 0
-  m_inventoryCapacity: 10
+  m_inventoryCapacity: 1
